@@ -1,0 +1,11 @@
+version: '3.6'
+
+#docker build . -t gocybertank
+#docker-compose -f docker-compose.yml up
+
+services:
+  gocybertank:
+    container_name: gocybertank
+    image: gocybertank:latest
+    command: --debug=false --name=gobot
+    restart: on-failure
