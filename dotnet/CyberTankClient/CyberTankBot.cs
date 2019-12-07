@@ -7,7 +7,7 @@
     /// </summary>
     public class CyberTankBot : CyberTankBotBase
     {
-        private readonly Random random;
+        private readonly Random _random;
 
         /// <summary>
         /// ctor.
@@ -18,7 +18,7 @@
         public CyberTankBot(string serverUrl, GameMode gameMode, string playerName)
             : base(serverUrl, gameMode, playerName)
         {
-            this.random = new Random(Environment.TickCount);
+            _random = new Random(Environment.TickCount);
         }
 
         /// <inheritdoc/>
@@ -48,7 +48,7 @@
         /// </remarks>
         protected override (short x, short y) OnStepRequested()
         {
-            return (x: (short)this.random.Next(0, 9), y: (short)this.random.Next(0, 9));
+            return (x: (short)_random.Next(0, 9), y: (short)_random.Next(0, 9));
         }
     }
 }

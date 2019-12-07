@@ -1,20 +1,22 @@
-﻿namespace CyberTankClient
+﻿using System.Threading.Tasks;
+
+namespace CyberTankClient
 {
     using System;
 
     internal class Program
     {
-        private static void Main(string[] args)
+        const string ServerUrl = "https://cybertank.sibedge.com:5001/gameHub";
+
+        private async static Task Main(string[] args)
         {
-            var serverUrl = "https://cybertank.sibedge.com:5001/gameHub";
+            await using var bot = new CyberTankBot(ServerUrl, GameMode.Debug, "NLO");
 
-            using (var bot = new CyberTankBot(serverUrl, GameMode.Debug, "Player_1"))
-            {
-                bot.OnReceiveMessage += message => { Console.WriteLine(message); };
-                bot.Start();
+            bot.OnReceiveMessage += message => { Console.WriteLine(message); };
 
-                Console.Read();
-            }
+            await bot.Start();
+
+            Console.Read();
         }
     }
 }

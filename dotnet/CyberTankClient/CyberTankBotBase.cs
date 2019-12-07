@@ -8,14 +8,15 @@
     /// <summary>
     /// Базовый класс бота для игры.
     /// </summary>
-    public abstract class CyberTankBotBase : IDisposable
+    public abstract class CyberTankBotBase : IAsyncDisposable
     {
         private const short MaxStep = 9;
         private const short MinStep = 0;
-        private readonly HubConnection connection;
-        private readonly GameMode gameMode;
-        private readonly string playerName;
-        private readonly string serverUrl;
+
+        private readonly HubConnection _connection;
+        private readonly GameMode _gameMode;
+        private readonly string _playerName;
+        private readonly string _serverUrl;
 
         /// <summary>
         /// ctor.
@@ -25,10 +26,11 @@
         /// <param name="playerName">Имя игрока.</param>
         protected CyberTankBotBase(string serverUrl, GameMode gameMode, string playerName)
         {
-            this.serverUrl = serverUrl;
-            this.gameMode = gameMode;
-            this.playerName = playerName;
-            this.connection = new HubConnectionBuilder().WithUrl(this.serverUrl).Build();
+            _serverUrl = serverUrl ?? throw new ArgumentNullException(nameof(serverUrl));
+            _gameMode = gameMode;
+            _playerName = playerName ?? throw new ArgumentNullException(nameof(playerName));
+
+            _connection = new HubConnectionBuilder().WithUrl(_serverUrl).Build();
         }
 
         /// <summary>
@@ -37,46 +39,46 @@
         public event Action<string> OnReceiveMessage;
 
         /// <inheritdoc/>
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            this.connection.StopAsync();
-            this.connection.DisposeAsync();
+            await _connection.StopAsync();
+            await _connection.DisposeAsync();
         }
 
         /// <summary>
         /// Запускает бота.
         /// </summary>
         /// <returns>Задание.</returns>
-        public Task Start()
+        public async Task Start()
         {
-            this.connection.On("requestArrangement",
+            _connection.On("requestArrangement",
                 () =>
                 {
-                    short[,] arrangement = OnArrangementRequested();
+                    var arrangement = OnArrangementRequested();
                     SendArrangement(arrangement);
                 });
-            this.connection.On("requestStep",
+
+            _connection.On("requestStep",
                 () =>
                 {
-                    (short x, short y) step = OnStepRequested();
-                    SendStep(step.x, step.y);
+                    var (x, y) = OnStepRequested();
+                    SendStep(x, y);
                 }
             );
-            this.connection.On<string>("receiveMessage", MessageReceived);
 
-            return this.connection.StartAsync().ContinueWith(
-                task =>
-                {
-                    if (task.IsFaulted)
-                    {
-                        MessageReceived(task.Exception.GetBaseException().Message);
-                    }
-                    else
-                    {
-                        MessageReceived($"Подключено {this.serverUrl}");
-                        StartGame();
-                    }
-                });
+            _connection.On<string>("receiveMessage", MessageReceived);
+
+            try
+            {
+                await _connection.StartAsync();
+
+                MessageReceived($"Подключено {_serverUrl}");
+                StartGame();
+            }
+            catch (Exception e)
+            {
+                MessageReceived(e.GetBaseException().Message);
+            }
         }
 
         /// <summary>
@@ -95,7 +97,7 @@
         /// <param name="board">Расстановка.</param>
         protected void SendArrangement(short[,] board)
         {
-            this.connection.InvokeAsync("ReceiveArrangement", JsonConvert.SerializeObject(board));
+            _connection.InvokeAsync("ReceiveArrangement", JsonConvert.SerializeObject(board));
         }
 
         /// <summary>
@@ -119,7 +121,7 @@
                 throw new ArgumentOutOfRangeException($"Индексы должны находится в диапозане [{MinStep};{MaxStep}]");
             }
 
-            this.connection.InvokeAsync("ReceiveStep", x, y);
+            _connection.InvokeAsync("ReceiveStep", x, y);
         }
 
         /// <summary>
@@ -127,7 +129,7 @@
         /// </summary>
         private void StartGame()
         {
-            this.connection.InvokeAsync(this.gameMode.ToString(), this.playerName);
+            _connection.InvokeAsync(_gameMode.ToString(), _playerName);
         }
     }
 }
