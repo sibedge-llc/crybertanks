@@ -27,7 +27,7 @@ public class Client {
         });
         connection.on("requestStep", () -> {
             final Step step = bot.sendStep();
-            connection.send("ReceiveStep", step.getX(), step.getY());
+            connection.send("ReceiveStep", step.getY(), step.getX());
         });
         connection.on("receiveMessage", message -> {
             LOGGER.info("received message {}", message);
