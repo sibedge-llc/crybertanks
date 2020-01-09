@@ -22,16 +22,15 @@ public class Client {
     }
 
     public void start(final PlayMode mode) {
-        connection.on("requestArrangement", () -> {
-            connection.send("ReceiveArrangement", bot.sendArrangement());
-        });
+        connection.on("requestArrangement", () ->
+                connection.send("ReceiveArrangement", bot.sendArrangement()));
         connection.on("requestStep", () -> {
             final Step step = bot.sendStep();
             connection.send("ReceiveStep", step.getY(), step.getX());
         });
         connection.on("receiveMessage", message -> {
             LOGGER.info("received message {}", message);
-            bot.receiveMessage(message);
+            bot.handleMessage(message);
         }, String.class);
 
         connection.onClosed(exception -> {
@@ -40,6 +39,6 @@ public class Client {
         });
 
         connection.start().blockingAwait();
-        connection.send(mode.getName(), bot.giveMeYourName());
+        connection.send(mode.getName(), bot.getName());
     }
 }

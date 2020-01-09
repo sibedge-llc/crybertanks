@@ -15,10 +15,10 @@ public class TestBot implements Bot {
     private final Logger logger = LoggerFactory.getLogger(TestBot.class);
 
 
-    public String name;
+    private final String name;
 
 
-    public TestBot(String name) {
+    TestBot(final String name) {
         this.name = name;
     }
 
@@ -52,13 +52,13 @@ public class TestBot implements Bot {
      *                com.sibedge.cybertank.TestBot#sendArrangement() некорректна) или результат прошлого хода
      */
     @Override
-    public void receiveMessage(final String message) {
+    public void handleMessage(final String message) {
         logger.info(message);
     }
 
 
     @Override
-    public String giveMeYourName() {
+    public String getName() {
         return this.name;
     }
 }
