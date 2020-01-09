@@ -2,9 +2,20 @@ package com.sibedge.cybertank.client;
 
 public enum PlayMode {
 
+    /**
+     * Режим боя
+     */
     FIGHT("Fight"),
+
+    /**
+     * Режим отладки
+     */
     DEBUG("Debug"),
-    DEBUG_TIMEOUT("DebugTimeout");
+
+    /**
+     * Режим тестового боя с визуальным отображением между двумя ботами
+     */
+    TEST("Test");
 
     public String getName() {
         return name;

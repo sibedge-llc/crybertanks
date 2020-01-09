@@ -6,7 +6,7 @@ public interface Bot {
 
     Step sendStep();
 
-    void receiveMessage(final String message);
+    void handleMessage(final String message);
 
-    String giveMeYourName();
+    String getName();
 }

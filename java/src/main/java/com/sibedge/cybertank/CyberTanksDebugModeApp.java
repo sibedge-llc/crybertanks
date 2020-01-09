@@ -4,7 +4,7 @@ import com.sibedge.cybertank.client.Client;
 import com.sibedge.cybertank.client.PlayMode;
 
 
-public class CyberTanksApp {
+public class CyberTanksDebugModeApp {
 
     public static void main(final String[] args) {
         final TestBot testBot = new TestBot("GLaDOS");
