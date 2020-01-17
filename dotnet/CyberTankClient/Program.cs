@@ -6,7 +6,7 @@
     {
         private static void Main(string[] args)
         {
-            var serverUrl = "https://cybertank.sibedge.com:5001/gameHub";
+            var serverUrl = "https://localhost:5001/gameHub";
 
             using (var bot = new CyberTankBot(serverUrl, GameMode.Debug, "Player_1"))
             {
